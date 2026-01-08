@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Play Tennis Prediction</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tree-img {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .tree-img img {
+            width: 600px;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+        .encoding {
+            margin-top: 20px;
+        }
+
+        .encoding ul {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        .form {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>🎾 Play Tennis Prediction</h2>
+
+    <div class="tree-img">
+        <img 
+            src="{{ url_for('static', filename='tree.png') }}" 
+            alt="Decision Tree Architecture">
+    </div>
+
+    <div class="encoding">
+        <strong>Feature Encoding:</strong>
+        <ul>
+            <li><b>Outlook</b>: Rain = 1, Overcast = 2, Sunny = 3</li>
+            <li><b>Temperature</b>: Hot = 1, Mild = 2, Cool = 3</li>
+            <li><b>Humidity</b>: High = 1, Normal = 0</li>
+            <li><b>Wind</b>: Weak = 0, Strong = 1</li>
+        </ul>
+    </div>
+
+   <div class="form">
+    <select id="outlook">
+        <option value="" disabled selected>Outlook</option>
+        <option value="1">Rain</option>
+        <option value="2">Overcast</option>
+        <option value="3">Sunny</option>
+    </select>
+
+    <select id="temp">
+        <option value="" disabled selected>Temperature</option>
+        <option value="1">Hot</option>
+        <option value="2">Mild</option>
+        <option value="3">Cool</option>
+    </select>
+
+    <select id="humidity">
+        <option value="" disabled selected>Humidity</option>
+        <option value="1">High</option>
+        <option value="0">Normal</option>
+    </select>
+
+    <select id="wind">
+        <option value="" disabled selected>Wind</option>
+        <option value="0">Weak</option>
+        <option value="1">Strong</option>
+    </select>
+</div>
+
+
+    <div class="btn-container">
+        <button onclick="predict()">Predict</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="footer">
+        Decision Tree built from scratch using Entropy & Information Gain
+    </div>
+
+</div>
+
+<script>
+function predict() {
+    const features = [
+        Number(document.getElementById("outlook").value),
+        Number(document.getElementById("temp").value),
+        Number(document.getElementById("humidity").value),
+        Number(document.getElementById("wind").value)
+    ];
+
+    fetch("/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({features: features})
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerText =
+            data.prediction === 1 ? "✅ Prediction: YES (Play Tennis)" : "❌ Prediction: NO (Do Not Play)";
+    });
+}
+</script>
+
+</body>
+</html>
